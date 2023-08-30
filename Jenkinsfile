@@ -16,15 +16,22 @@ pipeline {
 
 	        stage('Build Docker Image') { 
 		          steps {
-                  sleep 6
-                  checkout scm
-		          }	
+		             sh 'whoami'
+                   script {
+		                dockerImage = docker.build registry + ":${env.BUILD_ID}"
+                   }
+              }
 	        }
 	        stage("Push Docker Image") {
                 steps {
-                  sleep 17
-                  checkout scm
-		          }	
+                   script {
+
+                      docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push("${env.BUILD_ID}")
+                      } 
+
+                   }
+                }
           }
 	
     }
